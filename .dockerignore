@@ -1,0 +1,7 @@
+# Keeps local and sensitive files out of the container build context.
+
+node_modules
+.env
+coverage
+.git
+*.log

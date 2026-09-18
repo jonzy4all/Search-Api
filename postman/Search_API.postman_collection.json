@@ -1,0 +1,213 @@
+{
+  "info": {
+    "name": "Search API - Complete Capstone Flow",
+    "description": "Run in order after npm run seed. Public search requires no token; favorites require a user token; catalogue management requires an admin token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "userEmail", "value": "kate@example.com" },
+    { "key": "userPassword", "value": "Password123!" },
+    { "key": "userNewPassword", "value": "NewPassword456!" },
+    { "key": "adminEmail", "value": "admin@example.com" },
+    { "key": "adminPassword", "value": "ChangeMe123!" },
+    { "key": "adminNewPassword", "value": "AdminPassword456!" },
+    { "key": "userToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "recordIdentifier", "value": "nodejs-backend-engineering" }
+  ],
+  "item": [
+    {
+      "name": "1 - Authentication",
+      "item": [
+        {
+          "name": "Register user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Kate Jonathan\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\",\n  \"passwordConfirm\": \"{{userPassword}}\"\n}" },
+            "url": "{{baseUrl}}/auth/register",
+            "auth": { "type": "noauth" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Account created or already exists', () => pm.expect([201, 409]).to.include(pm.response.code));",
+            "if (pm.response.code === 201) pm.collectionVariables.set('userToken', pm.response.json().data.token);"
+          ] } }]
+        },
+        {
+          "name": "Log in user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}" },
+            "url": "{{baseUrl}}/auth/login",
+            "auth": { "type": "noauth" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('User login succeeds', () => pm.response.to.have.status(200));",
+            "pm.collectionVariables.set('userToken', pm.response.json().data.token);"
+          ] } }]
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Profile returned', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Change user password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"{{userPassword}}\",\n  \"newPassword\": \"{{userNewPassword}}\",\n  \"newPasswordConfirm\": \"{{userNewPassword}}\"\n}" },
+            "url": "{{baseUrl}}/auth/change-password",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('User password changed', () => pm.response.to.have.status(200));",
+            "if (pm.response.code === 200) { pm.collectionVariables.set('userToken', pm.response.json().data.token); pm.collectionVariables.set('userPassword', pm.collectionVariables.get('userNewPassword')); }"
+          ] } }]
+        },
+        {
+          "name": "Log in administrator",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}" },
+            "url": "{{baseUrl}}/auth/login",
+            "auth": { "type": "noauth" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Admin login succeeds', () => pm.response.to.have.status(200));",
+            "pm.collectionVariables.set('adminToken', pm.response.json().data.token);"
+          ] } }]
+        },
+        {
+          "name": "Change administrator password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"{{adminPassword}}\",\n  \"newPassword\": \"{{adminNewPassword}}\",\n  \"newPasswordConfirm\": \"{{adminNewPassword}}\"\n}" },
+            "url": "{{baseUrl}}/auth/change-password",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Admin password changed', () => pm.response.to.have.status(200));",
+            "if (pm.response.code === 200) { pm.collectionVariables.set('adminToken', pm.response.json().data.token); pm.collectionVariables.set('adminPassword', pm.collectionVariables.get('adminNewPassword')); }"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "2 - Administrator record management",
+      "item": [
+        {
+          "name": "Create draft record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Express Search API Course\",\n  \"description\": \"A practical course about secure record search APIs.\",\n  \"category\": \"technology\",\n  \"tags\": [\"nodejs\", \"express\", \"search\"],\n  \"status\": \"draft\",\n  \"price\": 30000,\n  \"rating\": 4.6,\n  \"location\": { \"city\": \"lagos\", \"country\": \"nigeria\" }\n}" },
+            "url": "{{baseUrl}}/admin/records",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Draft created', () => pm.response.to.have.status(201));",
+            "if (pm.response.code === 201) pm.collectionVariables.set('recordIdentifier', pm.response.json().data.slug);"
+          ] } }]
+        },
+        {
+          "name": "Publish record",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"published\"\n}" },
+            "url": "{{baseUrl}}/admin/records/{{recordIdentifier}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Record published', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Search all records as admin",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/records?status=published&page=1&limit=10",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Admin search succeeds', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "3 - Public search",
+      "item": [
+        {
+          "name": "Search published records without login",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/records?search=search&category=technology&minRating=4&sortBy=rating&sortOrder=desc&page=1&limit=10",
+            "auth": { "type": "noauth" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Public search succeeds', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "View published record without login",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/records/{{recordIdentifier}}",
+            "auth": { "type": "noauth" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Public record returned', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "4 - Favorites",
+      "item": [
+        {
+          "name": "Save favorite",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/favorites/{{recordIdentifier}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Favorite saved', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }]
+        },
+        {
+          "name": "List favorites",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/favorites?page=1&limit=10",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Favorites returned', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Remove favorite",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/favorites/{{recordIdentifier}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{userToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Favorite removed', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "5 - Cleanup",
+      "item": [
+        {
+          "name": "Delete demonstration record",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/admin/records/{{recordIdentifier}}",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Record deleted', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    }
+  ]
+}
