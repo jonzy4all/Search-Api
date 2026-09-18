@@ -49,7 +49,7 @@ module.exports = {
     version: "1.1.0",
     description: "Public search for published records, authenticated favorites, and administrator catalogue management.",
   },
-  servers: [{ url: "http://localhost:5000/api/v1", description: "Local development" }],
+  servers: [{ url: "{{baseUrl}}", description: "Local development" }],
   tags: [
     { name: "Authentication" }, { name: "Public Records" },
     { name: "Favorites" }, { name: "Administrator Records" },
