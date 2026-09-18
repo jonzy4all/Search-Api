@@ -27,17 +27,23 @@ This project implements Topic 25: Search API - search records with filters, sort
 - [x] `.gitignore` excludes `.env` and `node_modules`
 - [x] Push the project to the team's GitHub repository.
 - [x] Use feature branches and pull requests instead of having everyone work directly on `main`.
+- [x] Configure MongoDB Atlas and the required Render environment variables.
+- [x] Deploy the API to Render or another approved platform.
+- [x] Run `npm run seed` once with production environment variables.
+- [x] Replace the deployment placeholders in `README.md` with the real live API, Swagger and health URLs.
+- [X] Run the Postman collection against the deployed URL and retain evidence of the successful workflow.
+- [X] Demonstrate project structure, database models, authentication, authorization, search, validation, errors, documentation, tests and deployment.
+- [X] Confirm each member has meaningful commits and can explain their contribution.
 
 ## Complete before final submission
 
 
-- [ ] Confirm each member has meaningful commits and can explain their contribution.
-- [ ] Configure MongoDB Atlas and the required Render environment variables.
-- [ ] Deploy the API to Render or another approved platform.
-- [ ] Run `npm run seed` once with production environment variables.
-- [ ] Replace the deployment placeholders in `README.md` with the real live API, Swagger and health URLs.
-- [ ] Run the Postman collection against the deployed URL and retain evidence of the successful workflow.
-- [ ] Demonstrate project structure, database models, authentication, authorization, search, validation, errors, documentation, tests and deployment.
+
+
+
+
+
+
 
 ## Final local verification
 
