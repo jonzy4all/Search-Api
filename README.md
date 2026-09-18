@@ -320,9 +320,9 @@ The repository includes `render.yaml`.
 Before final capstone submission, replace the placeholders below with your real deployment addresses:
 
 ```text
-Live API: https://YOUR-RENDER-SERVICE.onrender.com
-Swagger: https://YOUR-RENDER-SERVICE.onrender.com/api/v1/docs
-Health: https://YOUR-RENDER-SERVICE.onrender.com/health
+Live API: https://search-api-pcbu.onrender.com
+Swagger: https://search-api-pcbu.onrender.com/api/v1/docs
+Health: https://search-api-pcbu.onrender.com/health
 ```
 
 For Atlas, allow connectivity from the hosting environment. Do not place database credentials in GitHub.
