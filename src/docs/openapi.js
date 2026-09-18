@@ -45,7 +45,7 @@ const errorContent = {
 module.exports = {
   openapi: "3.0.3",
   info: {
-    title: "Hajime Search API",
+    title: "Search API",
     version: "1.1.0",
     description: "Public search for published records, authenticated favorites, and administrator catalogue management.",
   },

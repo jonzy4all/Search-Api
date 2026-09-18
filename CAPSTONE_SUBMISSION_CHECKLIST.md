@@ -25,11 +25,12 @@ This project implements Topic 25: Search API - search records with filters, sort
 - [x] Render deployment blueprint
 - [x] `.env.example` without real secrets
 - [x] `.gitignore` excludes `.env` and `node_modules`
+- [x] Push the project to the team's GitHub repository.
+- [x] Use feature branches and pull requests instead of having everyone work directly on `main`.
 
 ## Complete before final submission
 
-- [ ] Push the project to the team's GitHub repository.
-- [ ] Use feature branches and pull requests instead of having everyone work directly on `main`.
+
 - [ ] Confirm each member has meaningful commits and can explain their contribution.
 - [ ] Configure MongoDB Atlas and the required Render environment variables.
 - [ ] Deploy the API to Render or another approved platform.

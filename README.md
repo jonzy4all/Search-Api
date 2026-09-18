@@ -287,7 +287,7 @@ After starting the server:
 
 - Swagger UI: `http://localhost:5000/api/v1/docs`
 - Raw OpenAPI JSON: `http://localhost:5000/api/v1/docs.json`
-- Postman: import `postman/Hajime_Search_API.postman_collection.json`
+- Postman: import `postman/Search_API.postman_collection.json`
 
 ## Tests
 
