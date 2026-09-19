@@ -5,6 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "frontend": "npm run dev --prefix frontend",
+    "dev:all": "concurrently \"npm run dev\" \"npm run frontend\"",
     "start": "node src/server.js",
     "seed": "node scripts/seed.js",
     "test": "jest --runInBand",
@@ -37,11 +39,11 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "concurrently": "^10.0.5",
     "jest": "^30.5.1",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   },
-
   "jest": {
     "testEnvironment": "node",
     "clearMocks": true,
@@ -50,6 +52,5 @@
       "!src/server.js",
       "!src/docs/**"
     ]
-}
-
+  } 
 }

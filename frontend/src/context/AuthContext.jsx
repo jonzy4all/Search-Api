@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
           await api.get("/auth/me");
 
         setUser(response.data.data.user);
-      } catch (error) {
+      } catch {
         localStorage.removeItem(TOKEN_KEY);
         setUser(null);
       } finally {

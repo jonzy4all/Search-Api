@@ -193,7 +193,7 @@ export default function RecordEditor() {
     } catch (err) {
       const message =
         err.response?.data
-          ?.errors?.[0] ||
+          ?.errors?.[0]?.message ||
         err.response?.data
           ?.message ||
         "Unable to save record.";

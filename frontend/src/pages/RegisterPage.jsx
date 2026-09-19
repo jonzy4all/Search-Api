@@ -56,7 +56,7 @@ export default function RegisterPage() {
         err.response?.data
           ?.message ||
           err.response?.data
-            ?.errors?.[0] ||
+            ?.errors?.[0]?.message ||
           "Registration failed."
       );
     } finally {

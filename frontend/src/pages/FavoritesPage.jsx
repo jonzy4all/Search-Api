@@ -1,77 +1,62 @@
+import { Heart } from "lucide-react";
 import {
-  Heart,
-} from "lucide-react";
-
-import {
+  useCallback,
   useEffect,
   useState,
 } from "react";
 
 import api from "../api/api";
-
 import Loader from "../components/Loader";
-import RecordCard from "../components/RecordCard";
 import Pagination from "../components/Pagination";
+import RecordCard from "../components/RecordCard";
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] =
-    useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [pagination, setPagination] =
-    useState(null);
+  const loadFavorites = useCallback(async () => {
+    setLoading(true);
+    setError("");
 
-  const [page, setPage] =
-    useState(1);
+    try {
+      const response = await api.get("/favorites", {
+        params: {
+          page,
+          limit: 9,
+        },
+      });
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const loadFavorites =
-    async () => {
-      setLoading(true);
-
-      try {
-        const response =
-          await api.get(
-            "/favorites",
-            {
-              params: {
-                page,
-                limit: 9,
-              },
-            }
-          );
-
-        setFavorites(
-          response.data.data || []
-        );
-
-        setPagination(
-          response.data.meta
-            ?.pagination
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      setFavorites(response.data.data || []);
+      setPagination(response.data.meta?.pagination || null);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Unable to load favorites."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [page]);
 
   useEffect(() => {
     loadFavorites();
-  }, [page]);
+  }, [loadFavorites]);
 
-  const removeFavorite = async (
-    record
-  ) => {
+  const removeFavorite = async (record) => {
     try {
-      await api.delete(
-        `/favorites/${record.slug}`
-      );
+      await api.delete(`/favorites/${record.slug}`);
 
-      await loadFavorites();
+      if (favorites.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await loadFavorites();
+      }
     } catch (err) {
-      window.alert(
-        err.response?.data
-          ?.message ||
+      setError(
+        err.response?.data?.message ||
           "Unable to remove favorite."
       );
     }
@@ -81,57 +66,35 @@ export default function FavoritesPage() {
     <div className="container page-section">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">
-            YOUR COLLECTION
-          </span>
-
-          <h1>
-            Saved favorites
-          </h1>
-
-          <p>
-            Records you've saved for
-            quick access.
-          </p>
+          <span className="eyebrow">YOUR COLLECTION</span>
+          <h1>Saved favorites</h1>
+          <p>Records you've saved for quick access.</p>
         </div>
 
         <Heart size={32} />
       </div>
+
+      {error && <div className="alert error">{error}</div>}
 
       {loading ? (
         <Loader />
       ) : favorites.length === 0 ? (
         <div className="empty-state">
           <Heart size={35} />
-
-          <h3>
-            No favorites yet
-          </h3>
-
-          <p>
-            Browse records and save the
-            ones you like.
-          </p>
+          <h3>No favorites yet</h3>
+          <p>Browse records and save the ones you like.</p>
         </div>
       ) : (
         <>
           <div className="record-grid">
-            {favorites.map(
-              (favorite) => (
-                <RecordCard
-                  key={
-                    favorite.favoriteId
-                  }
-                  record={
-                    favorite.record
-                  }
-                  saved
-                  onRemove={
-                    removeFavorite
-                  }
-                />
-              )
-            )}
+            {favorites.map((favorite) => (
+              <RecordCard
+                key={favorite.favoriteId}
+                record={favorite.record}
+                saved
+                onRemove={removeFavorite}
+              />
+            ))}
           </div>
 
           <Pagination

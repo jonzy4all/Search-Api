@@ -1,5 +1,4 @@
-# Provides a Render deployment blueprint.
-
+# Render Blueprint for the Search API backend and React/Vite frontend.
 services:
   - type: web
     name: search-api
@@ -19,3 +18,17 @@ services:
         value: 1d
       - key: CORS_ORIGIN
         sync: false
+
+  - type: web
+    name: search-api-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://search-api-pcbu.onrender.com/api/v1
