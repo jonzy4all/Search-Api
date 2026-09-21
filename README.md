@@ -323,7 +323,6 @@ Before final capstone submission, replace the placeholders below with your real 
 Live API: https://search-api-pcbu.onrender.com
 Swagger: https://search-api-pcbu.onrender.com/api/v1/docs
 Health: https://search-api-pcbu.onrender.com/health
-Frontend: https://search-api-frontend.onrender.com
 ```
 
 For Atlas, allow connectivity from the hosting environment. Do not place database credentials in GitHub.
